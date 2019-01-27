@@ -1,31 +1,30 @@
-// Define SVG area dimensions
+// Define SVG dimensions
 var svgWidth = 960;
 var svgHeight = 500;
 
-// Define the chart's margins as an object
 var chartMargin = {
   top: 30,
   right: 30,
   bottom: 30,
   left: 30
 };
-// Define dimensions of the chart area
+// dimensions of the chart area
 var chartWidth = svgWidth - chartMargin.left - chartMargin.right;
 var chartHeight = svgHeight - chartMargin.top - chartMargin.bottom;
 var padding = 25;  // Padding around canvas, i.e. replaces the 0 of scale
 var formatPercent = d3.format('.2%');
-// Select body, append SVG area to it, and set the dimensions
+// append SVG
 var svg = d3
   .select(".chart")
     .append("svg")
     .attr("height", svgHeight)
     .attr("width", svgWidth)
-  // Append a group to the SVG area and shift ('translate') it to the right and to the bottom
+  // Append a group to the SVG area and adjust location
   .append("g")
     .attr("transform", "translate(" + chartMargin.right + ", " + chartMargin.top + ")");
 // Append and SVG group
 var chart = svg.append("g");
-// Configure a band scale, with a range between 0 and the chartWidth and a padding of 0.1 (10%)
+// bandscale
 
 d3.select(".chart")
     .append("div")
@@ -43,25 +42,17 @@ d3.csv("newdata.csv", function(error, phData) {
 
       d.poverty = +d.poverty;
       d.healthcare = +d.healthcare;
-
-  
   });
-  // Scale the range of the data
+  
   var x = d3.scaleLinear().range([0, chartWidth]);
-
-// Create a linear scale, with a range between the chartHeight and 0.
   var y= d3.scaleLinear().range([chartHeight, 0]);
-
+  //var x = d3.scaleLinear().range([0]);
+  //var y= d3.scaleLinear().range([0]);
   var xAxis = d3.axisBottom(x);
-
   var yAxis = d3.axisLeft(y);
-
-
 
   var xValue = function(d) { return x(d.poverty);};
   var yValue = function(d) { return y(d.healthcare);};
-
-
 
   function findMinAndMax(i) {
         xMin = d3.min(phData, function(d) {
@@ -79,14 +70,13 @@ d3.csv("newdata.csv", function(error, phData) {
     
   var currentAxisXLabel = "poverty";
 
-    // Call findMinAndMax() with 'poverty' as default
+    // findMinAndMax()
   findMinAndMax(currentAxisXLabel);
 
-    // Set the domain of an axis to extend from the min to the max value of the data column
   xScale=x.domain([xMin, xMax]);
   yScale=y.domain([0, yMax]);
       
-  // Add the scatterplot
+  // ####### scatterplot #######
   var toolTip = d3.tip()
         .attr("class", "tooltip")
         .html(function(d) {
@@ -100,7 +90,7 @@ d3.csv("newdata.csv", function(error, phData) {
                 
 
 
-  // Circles
+  // adding circles
   circles = chart.selectAll('circle')
         .data(phData)
         .enter().append('circle')
@@ -116,7 +106,7 @@ d3.csv("newdata.csv", function(error, phData) {
         .attr('stroke-width',1)
         .style('fill', "lightblue")
         .attr("class", "circleText")
-        // add listeners on text too since it is on top of circle
+        // adding listeners
         .on("mouseover", function(d) {
           toolTip.show(d);
         })
@@ -126,7 +116,7 @@ d3.csv("newdata.csv", function(error, phData) {
         });              
      
   
-    // Add Text Labels
+    // Labels
   circles.append('text')
          .attr("x", function(d, index) {
             return x(+d[currentAxisXLabel]- 0.08);
@@ -142,7 +132,7 @@ d3.csv("newdata.csv", function(error, phData) {
         .attr('font-size', 9);
   
   
-    // X-axis
+    // xAxis
   xAxis = d3.axisBottom(x);
 
 
@@ -158,7 +148,7 @@ d3.csv("newdata.csv", function(error, phData) {
        .style("text-anchor", "middle")
        .text('In Poverty (%) ');
 
-  // Y-axis
+  // yAxis
   yAxis = d3.axisLeft(y);
             
   chart.append("g")
